@@ -1,8 +1,12 @@
-import { Box, Typography, Avatar, makeStyles } from "@material-ui/core";
+import { Box, Typography, Avatar, makeStyles, CardMedia, CardActionArea } from "@material-ui/core";
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/pt-br'
+import {useRouter} from 'next/router'
+import Image from 'next/image'
 
 dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 const useStyles = makeStyles((item) => ({
   caption: {
@@ -21,11 +25,21 @@ const useStyles = makeStyles((item) => ({
 
 function videoCard({ item }) {
   const classes = useStyles()
-    return (
-      <Box>
-        <img alt={item.title} src={item.thumb} className={classes.img}/>
+  const router = useRouter()
+  const clickHandle = () => {
+    document.location.href = item.videoUrl;
+  }
+  return (
+    <Box>
+        <CardActionArea onClick={() => 
+        router.push(item.videoUrl)
+        
+      }>
+        
+        <Image width={500} height={300} alt={item.title} src={item.thumb} layout="intrinsic" className={classes.img}/>
+        </CardActionArea>
         <Box display="flex" mt={1}>
-          <Box>
+          <Box mr={2}>
             <Avatar alt={item.authorName} src={item.authorAvatar} />
 
           </Box>
@@ -35,7 +49,7 @@ function videoCard({ item }) {
               gutterBottom
               variant="body1"
               color="textPrimary"
-            >
+              >
               {item.title}
 
             </Typography>

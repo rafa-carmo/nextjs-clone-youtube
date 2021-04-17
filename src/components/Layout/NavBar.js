@@ -1,4 +1,5 @@
 import {useRouter} from 'next/router'
+import {useState} from 'react'
 import {
   makeStyles,
   Hidden, 
@@ -14,7 +15,8 @@ import {
   Typography,
   Button
 } from "@material-ui/core"
-import { AccountCircle, History, Subscriptions, VideoLibrary, Whatshot } from "@material-ui/icons"
+import { AccountCircle, CloudSharp, History, Subscriptions, VideoLibrary, Whatshot } from "@material-ui/icons"
+import {signIn, useSession} from 'next-auth/client'
 
 import HomeIcon from "@material-ui/icons/Home"
 
@@ -62,6 +64,16 @@ function NavBar() {
   const classes = useStyles()
 
   const router = useRouter()
+
+  const [session] = useSession()
+
+  const [subscriptions, setSubscriptions] = useState([
+    {id:1, name:"Canal 1"},
+    {id:2, name:"Canal 2"},
+    {id:3, name:"Canal 3"},
+    {id:4, name:"Canal 4"},
+    {id:5, name:"Canal 5"},
+  ])
 
   const isSelected = (item) =>{
       return router.pathname === item.path
@@ -122,17 +134,49 @@ function NavBar() {
       </List>
       <Divider />
       
+      {!session ? (
+
       <Box mx={4} my={2}>
         <Typography variant="body2">
           Faça login para curtir vídeos, comentar e se inscrever.
         </Typography>
         <Box mt={2}>
-          <Button variant="outlined" color="secondary" startIcon={<AccountCircle />}>
+          <Button variant="outlined" color="secondary" startIcon={<AccountCircle />} onClick={() => signIn('google')}>
           Fazer Login
           </Button>
         </Box>
       </Box>
+      ) : (
+        <List
+          subheader = {
+            <ListSubheader component="div" id="nested-link-subheader">
+              Inscrições
+            </ListSubheader>
+          }
+          >
+            {subscriptions.map((item) => {
+              return (
+              <ListItem 
+              key={item.id}
+              button
+              classes={{root: classes.listItem}}
+              selected={isSelected(item)}
+              >
+                <ListItemIcon>
+                  <Avatar className={classes.avatar}>H</Avatar>
+                </ListItemIcon>
+                <ListItemText classes={{
+                  primary: classes.listItemText
+                }}
+                  primary={item.name} /> 
 
+                
+              </ListItem>
+              )
+            })}
+          </List>
+      )
+}
     </Box>
   )
   return (
@@ -143,6 +187,7 @@ function NavBar() {
             classes={{paper: classes.desktopDrawer}}
             open
             variant="persistent"
+
           >
             {content}
 
